@@ -37,7 +37,7 @@ public class RVGalleryAdapter extends RecyclerView.Adapter<RVGalleryAdapter.RVie
     private boolean twoImages;
 
     private int positionone = 0;  // first image posititon
-    private int positiontwo = 0;  // second image position
+    private int positiontwo = 0, test;  // second image position
 
 
     public void setTwoImages(boolean twoImages) {
