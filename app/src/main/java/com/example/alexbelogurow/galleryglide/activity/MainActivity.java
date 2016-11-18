@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
         pDialog = new ProgressDialog(this);
         images = new ArrayList<>();
 
-
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mAdapter = new RVGalleryAdapter(getApplicationContext(), images, this);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));

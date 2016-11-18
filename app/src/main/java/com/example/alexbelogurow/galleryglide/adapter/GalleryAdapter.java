@@ -16,6 +16,7 @@ import com.example.alexbelogurow.galleryglide.model.PersonImage;
 
 import java.util.List;
 
+//TODO DELETE
 
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHolder> {
 

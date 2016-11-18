@@ -20,6 +20,7 @@ import com.example.alexbelogurow.galleryglide.activity.TwoImages;
 import com.example.alexbelogurow.galleryglide.model.PersonImage;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +31,7 @@ public class RVGalleryAdapter extends RecyclerView.Adapter<RVGalleryAdapter.RVie
 
     private MainActivity mainActivity;
     private List<PersonImage> images;
+    private List<PersonImage> imagesForIntent;
     private Context mContext;
     private int n;
     private boolean twoImages;
@@ -63,6 +65,7 @@ public class RVGalleryAdapter extends RecyclerView.Adapter<RVGalleryAdapter.RVie
 
     public RVGalleryAdapter(Context mContext, List<PersonImage> images, MainActivity main) {
         this.images = images;
+        this.imagesForIntent = new ArrayList<PersonImage>();
         this.mContext = mContext;
         mainActivity = main;
 
@@ -80,14 +83,14 @@ public class RVGalleryAdapter extends RecyclerView.Adapter<RVGalleryAdapter.RVie
 
     @Override
     public void onBindViewHolder(final RViewHolder holder, final int position) {
-        PersonImage personImage = images.get(position);
+        final PersonImage personImage = images.get(position);
         Glide.with(mContext).load(personImage.getImageID())
                 .thumbnail(0.5f)
                 .crossFade()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(holder.mThumbnail);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        /*holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (twoImages) {
@@ -100,10 +103,16 @@ public class RVGalleryAdapter extends RecyclerView.Adapter<RVGalleryAdapter.RVie
                         positiontwo = position;
 
                         Intent intent = new Intent(v.getContext(), TwoImages.class);
-                        intent.putExtra("position1", positionone);
-                        intent.putExtra("position2", positiontwo);
+                        //intent.putExtra("position1", positionone);
+                        //intent.putExtra("position2", positiontwo);
+                        //intent.putExtra("position1", personImage);
                         Bundle bundle = new Bundle();
-                        bundle.putSerializable("images", (Serializable) images);
+                        bundle.putSerializable("images", (Serializable) new ArrayList<PersonImage>() {{
+                            add(images.get(positionone));
+                            add(images.get(positiontwo));
+                        }});
+                        Toast.makeText(v.getContext(), positionone + " " + positiontwo, Toast.LENGTH_SHORT).show();
+
                         intent.putExtras(bundle);
 
                         v.getContext().startActivity(intent);
@@ -122,6 +131,26 @@ public class RVGalleryAdapter extends RecyclerView.Adapter<RVGalleryAdapter.RVie
                     newFragment.show(ft, "slideshow");
                 }
                 }
+        }); */
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (imagesForIntent.isEmpty()) {
+                    imagesForIntent.add(images.get(position));
+                }
+                else if (imagesForIntent.size() == 1) {
+                    imagesForIntent.add(images.get(position));
+                    Intent intent = new Intent(v.getContext(), TwoImages.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("images", (Serializable) imagesForIntent);
+
+                    intent.putExtras(bundle);
+
+                    v.getContext().startActivity(intent);
+                    imagesForIntent.clear();
+
+                }
+            }
         });
 
     }
