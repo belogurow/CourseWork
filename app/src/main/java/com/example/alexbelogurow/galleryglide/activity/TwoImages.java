@@ -1,19 +1,31 @@
 package com.example.alexbelogurow.galleryglide.activity;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.EmbossMaskFilter;
+import android.graphics.MaskFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -22,7 +34,7 @@ import com.example.alexbelogurow.galleryglide.model.PersonImage;
 
 import java.util.ArrayList;
 
-public class TwoImages extends AppCompatActivity {
+public class TwoImages extends Activity implements ColorPickerDialog.OnColorChangedListener{
 
     private ImageView mImageOne;
     private ImageView mImageTwo;
@@ -30,12 +42,19 @@ public class TwoImages extends AppCompatActivity {
     private Paint mPaint;
 
 
+    private MaskFilter  mEmboss;
+    private MaskFilter mBlur;
+    DrawView drawView;
+    AlertDialog dialog;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_two_images);
-        setContentView(new DrawView(this));
-        //loadImages();
+        drawView = new DrawView(this);
+        drawView.setDrawingCacheEnabled(true);
+        setContentView(drawView);
+
 
 
         mPaint = new Paint();
@@ -46,6 +65,13 @@ public class TwoImages extends AppCompatActivity {
         mPaint.setStrokeJoin(Paint.Join.ROUND);  //The Join specifies the treatment where lines and curve segments join on a stroked path.
         mPaint.setStrokeCap(Paint.Cap.ROUND);    //The Cap specifies the treatment for the beginning and ending of stroked lines and paths.
         mPaint.setStrokeWidth(12);
+        mEmboss = new EmbossMaskFilter(new float[] { 1, 1, 1 },
+                0.4f, 6, 3.5f);
+        mBlur = new BlurMaskFilter(8, BlurMaskFilter.Blur.NORMAL);
+    }
+
+    public void colorChanged(int color) {
+        mPaint.setColor(color);
     }
 
 
@@ -70,7 +96,6 @@ public class TwoImages extends AppCompatActivity {
             super(context);
             mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-            int position1 = getIntent().getIntExtra("position1", 1);
             images = (ArrayList<PersonImage>) getIntent().getExtras().getSerializable("images");
             bitmapFirst = BitmapFactory.decodeResource(getResources(), images.get(0).getImageID());
             bitmapSecond = BitmapFactory.decodeResource(getResources(), images.get(1).getImageID());
@@ -106,7 +131,7 @@ public class TwoImages extends AppCompatActivity {
 
         @Override
         protected void onDraw(Canvas canvas) {
-            canvas.drawARGB(80, 102, 204, 255);
+            //canvas.drawARGB(80, 102, 204, 255);
 
             //draw first image
             canvas.drawBitmap(bitmapFirst, rectSrcFirst, rectDstFirst, mPaint);
@@ -115,6 +140,7 @@ public class TwoImages extends AppCompatActivity {
             canvas.drawBitmap(bitmapSecond, rectSrcSecond, rectDstSecond, mPaint);
 
             //draw bitmap for lines
+
             canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
             canvas.drawPath(mPath, mPaint);
             canvas.drawPath(circlePath,  circlePaint);
@@ -150,6 +176,7 @@ public class TwoImages extends AppCompatActivity {
             mCanvas.drawPath(mPath, mPaint);
             // kill this so we don't double draw
             mPath.reset();
+            //mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SCREEN));
         }
 
         @Override
@@ -174,22 +201,99 @@ public class TwoImages extends AppCompatActivity {
             return true;
         }
 
+
+
     }
 
 
 
-    private void loadImages() {
-        mImageOne = (ImageView) findViewById(R.id.imageViewOne);
-        mImageTwo = (ImageView) findViewById(R.id.imageViewTwo);
+    private static final int COLOR_MENU_ID = Menu.FIRST;
+    private static final int CLEAR_MENU_ID = Menu.FIRST + 1;
+    private static final int ERASE_MENU_ID = Menu.FIRST + 2;
+    private static final int Save = Menu.FIRST + 3;
 
-        int position1 = getIntent().getIntExtra("position1", 1);
-        int position2 = getIntent().getIntExtra("position2", 5);
-        images = (ArrayList<PersonImage>) getIntent().getExtras().getSerializable("images");
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
 
-        mImageOne.setImageResource(images.get(position1).getImageID());
-        mImageTwo.setImageResource(images.get(position2).getImageID());
 
-        Toast.makeText(getApplicationContext(), position1 + " " + position2, Toast.LENGTH_SHORT).show();
+        menu.add(0, COLOR_MENU_ID, 0, "Color");
+        menu.add(0, CLEAR_MENU_ID, 0, "Clear");
+        menu.add(0, ERASE_MENU_ID, 0, "Erase");
+        menu.add(0, Save, 0, "Save");
 
+        return true;
     }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        mPaint.setXfermode(null);
+        mPaint.setAlpha(0xFF);
+
+        switch (item.getItemId()) {
+            case COLOR_MENU_ID:
+                new ColorPickerDialog(this, this, mPaint.getColor()).show();
+                return true;
+            case CLEAR_MENU_ID:
+                drawView.mBitmap.eraseColor(Color.TRANSPARENT);
+                drawView.invalidate();
+                return true;
+            case ERASE_MENU_ID:
+                //mPaint.setAlpha(0xFF);
+                //mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+                return true;
+
+            /*
+            case Save:
+                AlertDialog.Builder editalert = new AlertDialog.Builder(FingerPaintActivity.this);
+                editalert.setTitle("Please Enter the name with which you want to Save");
+                final EditText input = new EditText(FingerPaintActivity.this);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.FILL_PARENT,
+                        LinearLayout.LayoutParams.FILL_PARENT);
+                input.setLayoutParams(lp);
+                editalert.setView(input);
+                editalert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+
+                        String name= input.getText().toString();
+                        Bitmap bitmap = mv.getDrawingCache();
+
+                        String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+                        File file = new File("/sdcard/"+name+".png");
+                        try
+                        {
+                            if(!file.exists())
+                            {
+                                file.createNewFile();
+                            }
+                            FileOutputStream ostream = new FileOutputStream(file);
+                            bitmap.compress(CompressFormat.PNG, 10, ostream);
+                            ostream.close();
+                            mv.invalidate();
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }finally
+                        {
+
+                            mv.setDrawingCacheEnabled(false);
+                        }
+                    }
+                });
+
+                editalert.show();
+                return true;
+            */
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }

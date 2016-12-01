@@ -44,7 +44,7 @@ public class SlideshowDialogFragment extends DialogFragment {
         lblDate = (TextView) v.findViewById(R.id.date); */
         name = (TextView) v.findViewById(R.id.title);
 
-        images = (ArrayList<PersonImage>) getArguments().getSerializable("images");
+        
         selectedPosition = getArguments().getInt("position");
 
         Log.e(TAG, "position: " + selectedPosition);

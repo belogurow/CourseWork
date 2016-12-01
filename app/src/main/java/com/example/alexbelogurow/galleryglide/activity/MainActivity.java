@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
         /*mAdapter = new GalleryAdapter(getApplicationContext(), images);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), 2));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -116,6 +117,9 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-
+    @Override
+    protected void onResume() {
+        mRecyclerView.setAdapter(mAdapter);
+        super.onResume();
+    }
 }
