@@ -3,6 +3,7 @@ package com.example.alexbelogurow.galleryglide.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.alexbelogurow.galleryglide.R;
 import com.example.alexbelogurow.galleryglide.activity.MainActivity;
+import com.example.alexbelogurow.galleryglide.activity.SlideshowDialogFragment;
 import com.example.alexbelogurow.galleryglide.activity.TwoImages;
 import com.example.alexbelogurow.galleryglide.model.PersonImage;
 
@@ -132,24 +134,37 @@ public class RVGalleryAdapter extends RecyclerView.Adapter<RVGalleryAdapter.RVie
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (imagesForIntent.isEmpty()) {
-                    imagesForIntent.add(images.get(position));
+                if (twoImages) {
+                    if (imagesForIntent.isEmpty()) {
+                        imagesForIntent.add(images.get(position));
 
+                    } else if (imagesForIntent.size() == 1) {
+                        imagesForIntent.add(images.get(position));
+                        Intent intent = new Intent(v.getContext(), TwoImages.class);
+                        // TODO записка
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        //Intent intent = new Intent(v.getContext(), FingerPaint.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("images", (Serializable) imagesForIntent);
+
+                        intent.putExtras(bundle);
+
+                        v.getContext().startActivity(intent);
+                        imagesForIntent.clear();
+                        setTwoImages(false);
+
+                    }
+                    holder.mThumbnail.setAlpha(0.2f);
                 }
-                else if (imagesForIntent.size() == 1) {
-                    imagesForIntent.add(images.get(position));
-                    Intent intent = new Intent(v.getContext(), TwoImages.class);
-                    //Intent intent = new Intent(v.getContext(), FingerPaint.class);
+                else {
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("images", (Serializable) imagesForIntent);
-
-                    intent.putExtras(bundle);
-
-                    v.getContext().startActivity(intent);
-                    imagesForIntent.clear();
-
+                    bundle.putSerializable("images", (Serializable) images);
+                    bundle.putInt("position", position);
+                    FragmentTransaction ft = mainActivity.getSupportFragmentManager().beginTransaction();
+                    SlideshowDialogFragment newFragment = SlideshowDialogFragment.newInstance();
+                    newFragment.setArguments(bundle);
+                    newFragment.show(ft, "slideshow");
                 }
-                holder.mThumbnail.setAlpha(0.2f);
             }
         });
 

@@ -76,15 +76,16 @@ public class MainActivity extends AppCompatActivity {
         pDialog.setMessage("Load DICOM images");
         pDialog.show();
 
+
         images.clear();
-        PersonImage image1 = new PersonImage("Alex", "", R.drawable.person31);
-        PersonImage image2 = new PersonImage("Tom", "", R.drawable.person310);
-        PersonImage image3 = new PersonImage("Kate", "", R.drawable.person32);
-        PersonImage image4 = new PersonImage("John", "", R.drawable.person34);
-        PersonImage image5 = new PersonImage("Maks", "", R.drawable.person35);
-        PersonImage image6 = new PersonImage("Elena", "", R.drawable.person36);
-        PersonImage image7 = new PersonImage("Smith", "", R.drawable.person38);
-        PersonImage image8 = new PersonImage("Anna", "", R.drawable.person39);
+        PersonImage image1 = new PersonImage("Alex", "7350", "23/01/1951", "25/11/2010 12:34:32", R.drawable.person31);
+        PersonImage image2 = new PersonImage("Tom", "9765", "13/02/1956", "18/08/2016 14:18:19", R.drawable.person310);
+        PersonImage image3 = new PersonImage("Kate", "5317", "06/10/1971", "29/04/2014 08:55:57", R.drawable.person32);
+        PersonImage image4 = new PersonImage("John", "4889", "01/03/1977", "11/01/2012 10:29:48", R.drawable.person34);
+        PersonImage image5 = new PersonImage("Maks", "8678", "29/02/1976", "26/12/2012 15:36:22", R.drawable.person35);
+        PersonImage image6 = new PersonImage("Elena", "9088", "01/10/1979", "03/02/2011 11:07:41", R.drawable.person36);
+        PersonImage image7 = new PersonImage("Smith", "8209", "02/04/1986", "03/05/2011 09:10:46", R.drawable.person38);
+        PersonImage image8 = new PersonImage("Anna", "9270", "09/05/1980", "18/11/2015 15:09:04", R.drawable.person39);
         pDialog.hide();
 
         images.add(image1);
@@ -121,5 +122,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         mRecyclerView.setAdapter(mAdapter);
         super.onResume();
+    }
+
+    // TODO записка
+    @Override
+    protected void onDestroy() {
+        try {
+            if (pDialog != null && pDialog.isShowing()) {
+                pDialog.dismiss();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        super.onDestroy();
     }
 }

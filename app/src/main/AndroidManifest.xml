@@ -16,7 +16,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.TwoImages"></activity>
+        <activity android:name=".activity.TwoImages"
+            android:noHistory = "true" >
+        </activity>
         <activity android:name=".activity.MainActivity"></activity>
     </application>
 

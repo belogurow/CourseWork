@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">GalleryGlide</string>
-    <string name="title_activity_main2">Main2Activity</string>
-    <string name="title_activity_network_gallery">NetworkGalleryActivity</string>
-    <string name="title_activity_sd_card_gallery">SdCardGalleryActivity</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="id">ID: %1$s</string>
+    <string name="spin">Spin: %1$s</string>
+    <string name="tilt">Tilt: %1$s</string>
+    <string name="sl">SL %1$s</string>
+    <string name="w">W: %1$s</string>
+    <string name="c">C: %1$s</string>
+
 </resources>
