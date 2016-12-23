@@ -3,6 +3,7 @@ package com.example.alexbelogurow.galleryglide.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BlurMaskFilter;
@@ -15,6 +16,7 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.os.Environment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -25,13 +27,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.alexbelogurow.galleryglide.R;
 import com.example.alexbelogurow.galleryglide.model.PersonImage;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 public class TwoImages extends Activity implements ColorPickerDialog.OnColorChangedListener{
@@ -51,6 +59,10 @@ public class TwoImages extends Activity implements ColorPickerDialog.OnColorChan
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         drawView = new DrawView(this);
         drawView.setDrawingCacheEnabled(true);
         setContentView(drawView);
@@ -209,8 +221,7 @@ public class TwoImages extends Activity implements ColorPickerDialog.OnColorChan
 
     private static final int COLOR_MENU_ID = Menu.FIRST;
     private static final int CLEAR_MENU_ID = Menu.FIRST + 1;
-    private static final int ERASE_MENU_ID = Menu.FIRST + 2;
-    private static final int Save = Menu.FIRST + 3;
+    private static final int SAVE_MENU_ID = Menu.FIRST + 2;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -219,8 +230,7 @@ public class TwoImages extends Activity implements ColorPickerDialog.OnColorChan
 
         menu.add(0, COLOR_MENU_ID, 0, "Color");
         menu.add(0, CLEAR_MENU_ID, 0, "Clear");
-        menu.add(0, ERASE_MENU_ID, 0, "Erase");
-        menu.add(0, Save, 0, "Save");
+        menu.add(0, SAVE_MENU_ID, 0, "Save");
 
         return true;
     }
@@ -244,16 +254,10 @@ public class TwoImages extends Activity implements ColorPickerDialog.OnColorChan
                 drawView.mBitmap.eraseColor(Color.TRANSPARENT);
                 drawView.invalidate();
                 return true;
-            case ERASE_MENU_ID:
-                //mPaint.setAlpha(0xFF);
-                //mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-                return true;
-
-            /*
-            case Save:
-                AlertDialog.Builder editalert = new AlertDialog.Builder(FingerPaintActivity.this);
+            case SAVE_MENU_ID:
+                AlertDialog.Builder editalert = new AlertDialog.Builder(TwoImages.this);
                 editalert.setTitle("Please Enter the name with which you want to Save");
-                final EditText input = new EditText(FingerPaintActivity.this);
+                final EditText input = new EditText(TwoImages.this);
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.FILL_PARENT,
                         LinearLayout.LayoutParams.FILL_PARENT);
@@ -263,10 +267,14 @@ public class TwoImages extends Activity implements ColorPickerDialog.OnColorChan
                     public void onClick(DialogInterface dialog, int whichButton) {
 
                         String name= input.getText().toString();
-                        Bitmap bitmap = mv.getDrawingCache();
+                        Bitmap bitmap = drawView.getDrawingCache();
 
-                        String path = Environment.getExternalStorageDirectory().getAbsolutePath();
-                        File file = new File("/sdcard/"+name+".png");
+                        File path = TwoImages.this.getExternalFilesDir(null);
+                        //String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+                        Toast.makeText(TwoImages.this, path+name+".png", Toast.LENGTH_SHORT).show();
+                        //File file = new File(path+name+".png");
+                        File file = new File(path, name + ".png");
+
                         try
                         {
                             if(!file.exists())
@@ -274,9 +282,9 @@ public class TwoImages extends Activity implements ColorPickerDialog.OnColorChan
                                 file.createNewFile();
                             }
                             FileOutputStream ostream = new FileOutputStream(file);
-                            bitmap.compress(CompressFormat.PNG, 10, ostream);
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 10, ostream);
                             ostream.close();
-                            mv.invalidate();
+                            drawView.invalidate();
                         }
                         catch (Exception e)
                         {
@@ -284,14 +292,13 @@ public class TwoImages extends Activity implements ColorPickerDialog.OnColorChan
                         }finally
                         {
 
-                            mv.setDrawingCacheEnabled(false);
+                            drawView.setDrawingCacheEnabled(false);
                         }
                     }
                 });
-
                 editalert.show();
                 return true;
-            */
+
         }
         return super.onOptionsItemSelected(item);
     }

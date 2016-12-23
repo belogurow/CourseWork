@@ -1,11 +1,12 @@
 <resources>
-    <string name="app_name">GalleryGlide</string>
+    <string name="app_name">VRS</string>
 
-    <string name="id">ID: %1$s</string>
+    <string name="id">personID: %1$s</string>
     <string name="spin">Spin: %1$s</string>
     <string name="tilt">Tilt: %1$s</string>
     <string name="sl">SL %1$s</string>
     <string name="w">W: %1$s</string>
     <string name="c">C: %1$s</string>
+    <string name="splash_screen">Visualization of results of scanning of the spinal column</string>
 
 </resources>

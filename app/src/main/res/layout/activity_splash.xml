@@ -28,7 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20dp"
-        android:text="Visualization of results of scanning of the spinal column"
+        android:text="@string/splash_screen"
         tools:layout_constraintTop_creator="1"
         android:id="@+id/textView"
         app:layout_constraintTop_toBottomOf="@+id/imageView"

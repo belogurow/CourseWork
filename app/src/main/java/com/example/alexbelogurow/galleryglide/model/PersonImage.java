@@ -1,5 +1,7 @@
 package com.example.alexbelogurow.galleryglide.model;
 
+import android.graphics.drawable.Drawable;
+
 import java.io.Serializable;
 
 /**
@@ -7,8 +9,8 @@ import java.io.Serializable;
  */
 
 public class PersonImage implements Serializable {
-    private String name,
-            ID,
+    private String personName,
+            personID,
             birthDate,
             imageDate,
             spin,
@@ -17,13 +19,14 @@ public class PersonImage implements Serializable {
             w,
             c;
 
+    private Drawable drawable;
     private Integer imageID;
 
     @Override
     public String toString() {
         return "PersonImage{" +
-                "name='" + name + '\'' +
-                ", ID='" + ID + '\'' +
+                "personName='" + personName + '\'' +
+                ", personID='" + personID + '\'' +
                 ", birthDate='" + birthDate + '\'' +
                 ", imageDate='" + imageDate + '\'' +
                 ", spin='" + spin + '\'' +
@@ -34,9 +37,9 @@ public class PersonImage implements Serializable {
                 '}';
     }
 
-    public PersonImage(String name, String ID, String birthDate, String imageDate, String spin, String tilt, String sl, String w, String c, Integer imageID) {
-        this.name = name;
-        this.ID = ID;
+    public PersonImage(String personName, String personID, String birthDate, String imageDate, String spin, String tilt, String sl, String w, String c, Integer imageID) {
+        this.personName = personName;
+        this.personID = personID;
         this.birthDate = birthDate;
         this.imageDate = imageDate;
         this.spin = spin;
@@ -47,9 +50,9 @@ public class PersonImage implements Serializable {
         this.imageID = imageID;
     }
 
-    public PersonImage(String name, String ID, String birthDate, String imageDate, Integer imageID) {
-        this.name = name;
-        this.ID = ID;
+    public PersonImage(String personName, String personID, String birthDate, String imageDate, Integer imageID) {
+        this.personName = personName;
+        this.personID = personID;
         this.birthDate = birthDate;
         this.imageDate = imageDate;
         this.imageID = imageID;
@@ -58,22 +61,41 @@ public class PersonImage implements Serializable {
         this.sl = "0.75";
         this.w = "350";
         this.c = "40";
+        this.drawable = null;
     }
 
-    public String getName() {
-        return name;
+    public PersonImage(String personName, String personID, String birthDate, String imageDate, Drawable drawable) {
+        this.personName = personName;
+        this.personID = personID;
+        this.birthDate = birthDate;
+        this.imageDate = imageDate;
+        this.drawable = drawable;
+        this.spin = "-90";
+        this.tilt = "0";
+        this.sl = "0.75";
+        this.w = "350";
+        this.c = "40";
+        this.imageID = null;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public Drawable getDrawable() {
+        return drawable;
     }
 
-    public String getID() {
-        return ID;
+    public String getPersonName() {
+        return personName;
     }
 
-    public void setID(String ID) {
-        this.ID = ID;
+    public void setPersonName(String personName) {
+        this.personName = personName;
+    }
+
+    public String getPersonID() {
+        return personID;
+    }
+
+    public void setPersonID(String personID) {
+        this.personID = personID;
     }
 
     public String getBirthDate() {

@@ -1,6 +1,7 @@
 package com.example.alexbelogurow.galleryglide.activity;
 
 import android.app.ProgressDialog;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -12,7 +13,11 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import com.example.alexbelogurow.galleryglide.R;
 import com.example.alexbelogurow.galleryglide.adapter.RVGalleryAdapter;
@@ -76,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
         pDialog.setMessage("Load DICOM images");
         pDialog.show();
 
-
         images.clear();
         PersonImage image1 = new PersonImage("Alex", "7350", "23/01/1951", "25/11/2010 12:34:32", R.drawable.person31);
         PersonImage image2 = new PersonImage("Tom", "9765", "13/02/1956", "18/08/2016 14:18:19", R.drawable.person310);
@@ -96,6 +100,21 @@ public class MainActivity extends AppCompatActivity {
         images.add(image6);
         images.add(image7);
         images.add(image8);
+
+        File path = getApplicationContext().getExternalFilesDir(null);
+        File[] files = path.listFiles();
+
+        for (File fileIn : files) {
+            Drawable drawable = Drawable.createFromPath(fileIn.toString());
+            SimpleDateFormat date = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat id = new SimpleDateFormat("MMddHHmmss", Locale.getDefault());
+            images.add(new PersonImage(
+                    fileIn.getName().replace(".png", ""),
+                    id.format(fileIn.lastModified()),
+                    "",
+                    date.format(fileIn.lastModified()),
+                    drawable));
+        }
 
     }
 
@@ -121,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         mRecyclerView.setAdapter(mAdapter);
+        loadDICOM();
         super.onResume();
     }
 

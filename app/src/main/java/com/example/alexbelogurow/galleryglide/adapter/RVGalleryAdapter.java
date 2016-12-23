@@ -3,12 +3,14 @@ package com.example.alexbelogurow.galleryglide.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -83,11 +85,25 @@ public class RVGalleryAdapter extends RecyclerView.Adapter<RVGalleryAdapter.RVie
     @Override
     public void onBindViewHolder(final RViewHolder holder, final int position) {
         final PersonImage personImage = images.get(position);
-        Glide.with(mContext).load(personImage.getImageID())
-                .thumbnail(0.5f)
-                .crossFade()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(holder.mThumbnail);
+
+        if (personImage.getImageID() == null) {
+            Glide.with(mContext)
+                    .load("")
+                    .thumbnail(0.5f)
+                    .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .placeholder(personImage.getDrawable())
+                    .into(holder.mThumbnail);
+
+        }
+        else {
+            Glide.with(mContext)
+                    .load(personImage.getImageID())
+                    .thumbnail(0.5f)
+                    .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(holder.mThumbnail);
+        }
 
         /*holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,25 +152,35 @@ public class RVGalleryAdapter extends RecyclerView.Adapter<RVGalleryAdapter.RVie
             public void onClick(View v) {
                 if (twoImages) {
                     if (imagesForIntent.isEmpty()) {
-                        imagesForIntent.add(images.get(position));
+                        if (personImage.getDrawable() == null) {
+                            imagesForIntent.add(personImage);
+                            holder.mThumbnail.setAlpha(0.2f);
+                        }
+                        else {
+                            errorImage();
+                        }
 
                     } else if (imagesForIntent.size() == 1) {
-                        imagesForIntent.add(images.get(position));
-                        Intent intent = new Intent(v.getContext(), TwoImages.class);
-                        // TODO записка
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                        //Intent intent = new Intent(v.getContext(), FingerPaint.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("images", (Serializable) imagesForIntent);
+                        if (personImage.getDrawable() == null) {
+                            holder.mThumbnail.setAlpha(0.2f);
+                            imagesForIntent.add(personImage);
+                            Intent intent = new Intent(v.getContext(), TwoImages.class);
+                            // TODO записка
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                            //Intent intent = new Intent(v.getContext(), FingerPaint.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("images", (Serializable) imagesForIntent);
 
-                        intent.putExtras(bundle);
+                            intent.putExtras(bundle);
 
-                        v.getContext().startActivity(intent);
-                        imagesForIntent.clear();
-                        setTwoImages(false);
-
+                            v.getContext().startActivity(intent);
+                            imagesForIntent.clear();
+                            setTwoImages(false);
+                        }
+                        else {
+                            errorImage();
+                        }
                     }
-                    holder.mThumbnail.setAlpha(0.2f);
                 }
                 else {
                     Bundle bundle = new Bundle();
@@ -168,6 +194,13 @@ public class RVGalleryAdapter extends RecyclerView.Adapter<RVGalleryAdapter.RVie
             }
         });
 
+    }
+
+    private void errorImage() {
+        Toast.makeText(mContext, "You can't choose the modified image, select another", Toast.LENGTH_SHORT).show();
+        Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+        // Vibrate for 30 milliseconds
+        vibrator.vibrate(30);
     }
 
     @Override

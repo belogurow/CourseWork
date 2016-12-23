@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -27,7 +26,7 @@ public class SlideshowDialogFragment extends DialogFragment {
     private ViewPager viewPager;
     private MyViewPagerAdapter myViewPagerAdapter;
     //private TextView lblCount, lblTitle, lblDate;
-    private TextView lblCount, name, id, birthDate, imageDate, spin, tilt, w, c, sl;
+    private TextView lblCount, personName, personID, birthDate, imageDate, spin, tilt, w, c, sl;
     private int selectedPosition = 0;
 
     public static SlideshowDialogFragment newInstance() {
@@ -41,8 +40,8 @@ public class SlideshowDialogFragment extends DialogFragment {
         View v = inflater.inflate(R.layout.fragment_image_slider, container, false);
         viewPager = (ViewPager) v.findViewById(R.id.viewpager);
         lblCount = (TextView) v.findViewById(R.id.lbl_count);
-        name = (TextView) v.findViewById(R.id.slider_name);
-        id = (TextView) v.findViewById(R.id.slider_id);
+        personName = (TextView) v.findViewById(R.id.slider_name);
+        personID = (TextView) v.findViewById(R.id.slider_id);
         birthDate = (TextView) v.findViewById(R.id.slider_birthDate);
         imageDate = (TextView) v.findViewById(R.id.slider_imageDate);
         spin = (TextView) v.findViewById(R.id.slider_spin);
@@ -92,11 +91,12 @@ public class SlideshowDialogFragment extends DialogFragment {
     };
 
     private void displayMetaInfo(int position) {
+
         lblCount.setText((position + 1) + " of " + images.size());
 
         PersonImage image = images.get(position);
-        name.setText(image.getName());
-        id.setText(getString(R.string.id, image.getID()));
+        personName.setText(image.getPersonName());
+        personID.setText(getString(R.string.id, image.getPersonID()));
         imageDate.setText(image.getImageDate());
         birthDate.setText(image.getBirthDate());
         spin.setText(getString(R.string.spin, image.getSpin()));
@@ -130,12 +130,23 @@ public class SlideshowDialogFragment extends DialogFragment {
 
             PersonImage image = images.get(position);
 
+            if (image.getImageID() == null) {
+                Glide.with(getActivity())
+                        .load("")
+                        .thumbnail(0.5f)
+                        .crossFade()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .placeholder(image.getDrawable())
+                        .into(imageViewPreview);
+
+            }
+            else {
             Glide.with(getActivity()).load(image.getImageID())
                     .thumbnail(0.5f)
                     .crossFade()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(imageViewPreview);
-
+            }
             container.addView(view);
 
             return view;
